@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, TextInput, Pressable, Image, ActivityIndicator, Alert, FlatList, ScrollView } from 'react-native';
-import { colors, fonts, spacing } from '../../src/theme/tokens';
-import { api } from '../../src/api/client';
 import * as ImagePicker from 'expo-image-picker';
+import { Redirect } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { api } from '../../src/api/client';
+import { useAuth } from '../../src/auth/AuthContext';
+import { colors, fonts, spacing } from '../../src/theme/tokens';
+
 
 export default function CreateEvent() {
   const [nombre, setNombre] = useState('');
@@ -15,6 +18,9 @@ export default function CreateEvent() {
   const [descripcion, setDescripcion] = useState('');
   const [video, setVideo] = useState('');
   const [puntuacion, setPuntuacion] = useState(0);
+  const { can } = useAuth();
+if (!can('ITEM_CREATE')) return <Redirect href="/" />;
+
 
   useEffect(() => {
     api.listCategories().then(setCategorias).catch(() => {});

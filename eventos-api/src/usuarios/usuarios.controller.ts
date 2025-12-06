@@ -1,3 +1,5 @@
+// src/usuarios/usuarios.controller.ts
+
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
@@ -24,5 +26,12 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Crear usuario' })
   create(@Body() dto: CreateUsuarioDto) {
     return this.s.create(dto);
+  }
+
+  // NUEVO: obtener usuario por nombre_usuario
+  @Get('by-name/:name')
+  @ApiOperation({ summary: 'Obtener un usuario por nombre_usuario' })
+  findByName(@Param('name') name: string) {
+    return this.s.findByName(name);
   }
 }

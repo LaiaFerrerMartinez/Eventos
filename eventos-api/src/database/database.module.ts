@@ -27,7 +27,7 @@ import config from '../config/config';
           username: postgres.user,
           password: postgres.password,
           database: postgres.dbName,
-          synchronize: true, // solo dev
+          synchronize: false, // solo dev
           autoLoadEntities: true,
           ssl: { rejectUnauthorized: false },
           logging: true,

@@ -1,6 +1,9 @@
-import { Tabs } from 'expo-router';
+// eventos-app/app/(tabs)/_layout.tsx
+
 import { Ionicons } from '@expo/vector-icons';
+import { Redirect, Tabs } from 'expo-router';
 import { View } from 'react-native';
+import { useAuth } from '../../src/auth/AuthContext';
 import { colors } from '../../src/theme/tokens';
 
 function TabBarBackground() {
@@ -16,12 +19,20 @@ function TabBarBackground() {
           backgroundColor: colors.blue,
         }}
       />
-      {/* sombra azul clara opcional: ver variante con gradiente si quieres más suave */}
     </View>
   );
 }
 
 export default function TabsLayout() {
+  const { currentUser, loading, can } = useAuth();
+
+  if (loading) return null;
+
+  // AQUÍ el cambio: '/login' en vez de '/role'
+  if (!currentUser) {
+    return <Redirect href={'/login' as any} />;
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -43,61 +54,92 @@ export default function TabsLayout() {
         tabBarBackground: () => <TabBarBackground />,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="categories"
-        options={{
-          title: 'Categories',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="favorites"
-        options={{
-          title: 'Favorites',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons
-              name={focused ? 'heart' : 'heart-outline'} // corazón como en el diseño
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="create"
-        options={{
-          title: 'Create',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-  name="explore"
-  options={{ href: null }}   // oculta la pestaña aunque el archivo exista
-/>
+      {/* resto igual que ya tienes */}
+      {can('ITEM_LIST') && (
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
 
-      {/* Eliminado explore */}
+      {can('ITEM_LIST') && (
+        <Tabs.Screen
+          name="categories"
+          options={{
+            title: 'Categories',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="grid-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
+
+      {can('FAVORITES_USE') && (
+        <Tabs.Screen
+          name="favorites"
+          options={{
+            title: 'Favorites',
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? 'heart' : 'heart-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      )}
+
+      {can('ITEM_CREATE') && (
+        <Tabs.Screen
+          name="create"
+          options={{
+            title: 'Create',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons
+                name="add-circle-outline"
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      )}
+
+      {can('ADMIN_PANEL_VIEW') && (
+        <Tabs.Screen
+          name="admin"
+          options={{
+            title: 'Admin',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
+
+      {can('PROFILE_VIEW') && (
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons
+                name="person-circle-outline"
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      )}
+
+      <Tabs.Screen name="explore" options={{ href: null }} />
     </Tabs>
   );
 }
